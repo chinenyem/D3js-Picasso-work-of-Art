@@ -1,0 +1,339 @@
+{% if not ajax %}
+{% extends "../base.jinja2" %}
+{% endif %}
+{% block title %}IAVM POA&M List{% endblock %}
+{% block mainContent %}
+
+
+<style>
+.arc path{
+    stroke: #fff;
+}
+
+dot{
+    fill:lightblue;
+    stroke:#999999;
+  }
+div.section {	
+    position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 28px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    		
+}
+
+</style>
+
+<div id='data-tooltip' data-tooltip="True"></div>
+
+    <ol class="breadcrumb bc-2">
+        <li>
+            <a href="/dashboard">
+                <i class="entypo-home"></i>
+                Phoenix
+            </a>
+        </li>
+        <li class="active"><strong>D3 Visualizations</strong></li>
+    </ol>
+
+<div id="content">
+    
+    <i class="phx-zune" style="float:left;margin-top:-2px;line-height:14px;font-size:40px;color:green;"></i>
+    <h2>D3 Visualizations</h2
+    <h4>Visualizations</h4>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-md-12 testd3">
+        
+        
+        </div>
+        <div class="col-md-6 piechart">
+        </div>
+    </div>
+    
+    
+    
+   
+</div>
+
+
+<script src = "/static/js/d3.min.js"></script>
+
+<script>
+ $(function(){
+ 
+      // Create the SVG
+    var svg = d3.select(".testd3").append("svg")
+       .attr("class", "parent")
+      .attr("width", 900)
+      .attr("height", 600)
+      .on("click", click, function(e){ click()})
+      
+      
+ 
+    function click(){
+    
+    if (d3.event.defaultPrevented) return;
+    
+        console.log(d3.select(this)[0][0])
+          // Ignore the click event if it was suppressed
+          if (d3.event.defaultPrevented) return true;
+
+          // Extract the click location\    
+          var point = d3.mouse(this), 
+                p = {x: point[0], y: point[1] };
+                console.log(point)
+          
+        svg.append("svg:g")
+          // Append a new point
+          .attr("transform", "translate(" + p.x + "," + p.y + ")")
+          .call(drag)
+          .append("svg:image")
+               .attr("xlink:href", "/static/images/phx1ioc.png")
+                    .attr("width", 60)
+                    .attr("height", 60)
+                   // .attr("transform", "translate(" + p.x + "," + p.y + ")")
+              .attr("class", "dot")
+              
+              .style("cursor", "pointer");
+              d3.selectAll('image')
+              .on("click", imageClick.bind(this, d3.mouse(this)) )
+              .on("mouseover", movingLines)
+              //
+    }
+    
+    
+        
+    function imageClick(d){
+        //console.log(d)
+        var image_point = d3.mouse(this), 
+                ip = {x: image_point[0], y: image_point[1] };
+            d3.select(this).selectAll('g').append("rect")
+                    .attr("width", 40)
+                    .attr("height", 40)
+                    .style("fill", "rgb(128, 0, 128)")
+                    .attr("class", "square")
+                .on("click", connectLines.bind(this, d3.mouse(this)))
+                d3.event.stopPropagation();
+    }
+    
+    function connectLines(d){
+        console.log("hello")
+       var image_point = d3.mouse(this), 
+                ip = {x: image_point[0], y: image_point[1] };
+             d3.select(this).selectAll('g').append("line")
+             //.attr("transform", "translate(" + ip.x + "," + ip.y + ")")
+                .style("stroke", 'rgb(255,0,0)')
+                .style("stroke-width", 2)
+                .attr('x1', ip.x )
+                .attr('y1', ip.y )
+                //.attr('x2', ip.x + 20)
+                //.attr('y2', ip.y + 20) ;
+                 
+                 //d3.select(this).selectAll('g').on('mousemove',null);
+                //d3.select(this).on('mouseup',null);
+                
+                d3.event.stopPropagation();
+    }
+    
+    function movingLines(d){
+        var mouseLoc = d3.mouse(this);
+         d3.select(this).select('g').selectAll('line')
+            .attr('x2', mouseLoc[0]-5)
+            .attr('y2', mouseLoc[1]-5);
+            
+            d3.event.stopPropagation();
+    }
+    
+    
+    
+    
+    
+    
+    
+     //var div = d3.select("div").append("div")	
+           // .attr("class", "tooltip")				
+           // .style("opacity", 0);
+
+            
+   
+    // Add a background
+    svg.append("rect")
+      .attr("width", 900)
+      .attr("height", 600)
+      .style("stroke", "#999999")
+      .style("fill", "#F6F6F6")
+
+    // Define drag beavior
+    var drag = d3.behavior.drag()
+        .on("drag", dragmove);
+
+    function dragmove(d) {
+      var x = d3.event.x;
+      var y = d3.event.y;
+      d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
+    }
+  
+  })
+
+  //(function(){
+    //var json_two = {{ data | safe }}
+    
+    //keys = []
+    //$.each(json_two, function( key, value ) {
+      //  keys.push(value.ip)
+    //});
+    //console.log(keys)
+    
+    //var drag = d3.behavior.drag()
+      //  .on("drag", function(d,i) {
+            //x = Math.random() * 1280
+            //y = Math.random() * 800
+        //    d.x += d3.event.dx
+          //  d.y += d3.event.dy
+            //d3.select(this).attr("transform", function(d,i){
+              //  return "translate(" + [ d.x,d.y ] + ")"
+            //})
+    //});
+    
+    //var w = 1280,
+      //  h = 800,
+        //x = Math.random() * w,
+        //y = Math.random() * h;
+        
+    //var color = d3.scale.category10();
+    
+    //var svg = d3.select(".testd3").append("svg:svg")
+      //  .attr("width", w)
+        //.attr("height", h)
+        //.data([ {"x":Math.random() * w, "y":Math.random() *h} ])
+        //.attr("transform", "translate(" + x + "," + y + ")")
+        //.call(drag);
+    
+    //svg.selectAll("circle")
+      //  .data(keys)
+    //.enter().append("svg:circle")
+    //.attr("r", function(d,i) {  return Math.sqrt(i) * 10;})
+    //.attr("cx", function(d, i) { return i * 100 + 30; })
+    //.attr("cy", function(d, i) { return i * 8 + 60; })
+    //.style("fill", function(d, i) { return color(i % 3); });
+    
+    
+   
+ // })()
+
+
+
+</script>
+
+
+
+
+<script>
+
+var json = {
+    data :[{
+       "age": "<5",
+       "population": 2704659
+    },
+    {
+       "age": "5-13",
+       "population": 4499890
+    },
+    {
+       "age": "14-17",
+       "population": 2159981
+    },
+    {
+       "age": "18-24",
+       "population": 3853788
+    },
+    {
+       "age": "25-44",
+       "population": 14106543
+    },
+    {
+       "age": "45-64",
+       "population": 8819342
+    },
+    {
+       "age": ">=65",
+       "population": 612463
+    }]
+
+}
+
+var newData = []
+for (var i = 0; i < json.data.length; i++){
+    var obj = json.data[i]
+    //console.log(obj.age)
+    var thisData ={
+        "Age": obj.age,
+        "Population": obj.population
+    }
+    newData.push(thisData)
+}
+
+//console.log(newData)
+
+
+//height and width of the pie chart
+
+var width = 960,
+    height = 500,
+    radius = Math.min(width, height) / 2;
+    
+
+    
+//color range for each slice of data point
+var color = d3.scale.ordinal()
+    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+    
+//define the arc function
+var arc = d3.svg.arc()
+    .outerRadius(radius - 10)
+    .innerRadius(0);
+//  create the pie chart    
+var pie = d3.layout.pie()
+    .value(function(d, i) {console.log(d, i); return d.Population; })
+    .sort(null);
+    
+
+var svg = d3.select('.piechart').append('svg')
+    .attr('width', width)
+    .attr('height', height)
+  .append('g')
+    .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')' );
+    
+var g = svg.selectAll('.arc')
+    .data(pie(newData))
+  .enter().append('g')
+    .attr('class', 'arc');
+    
+g.append('path')
+    .attr('d', arc)
+    .style('fill', function(d){return color(d.data.Age); });
+
+g.append('text')
+    .attr('transform', function(d){return "translate(" + arc.centroid(d) +")"; })
+    .attr('dy', '.35em')
+    .style('text-anchor', 'middle')
+    .text(function(d){return d.data.Population; });
+    
+
+
+
+
+
+
+</script>
+
+{% endblock %}
